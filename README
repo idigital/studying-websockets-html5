@@ -1,0 +1,9 @@
+Just a simple project to save my work. Technologies I am trying out:
+
+EventMachine
+EventMachine Websockets
+Celluloid
+Sequel ORM
+HTML5 Canvas w/ Javascript
+
+End goal is to mash these together for real-time simulation.
