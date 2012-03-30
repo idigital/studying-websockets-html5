@@ -1,8 +1,6 @@
 require 'sequel'
-require 'celluloid'
 
 class DAO
-  include Celluloid
   
   DB = Sequel.sqlite
   
