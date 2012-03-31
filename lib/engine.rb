@@ -10,7 +10,9 @@ class Engine
   def advance(user_accounts)
     # TODO: Run through timed tasks and handle all their messages
     user_accounts.each do |user_account|
-      puts "Test: #{user_account.inspect}"
+      unless user_account.nil?
+        puts "Test: #{user_account.inspect}"
+      end
     end
   end
   
