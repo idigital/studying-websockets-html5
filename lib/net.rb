@@ -1,11 +1,8 @@
 require 'em-websocket'
-
-class UserAccount
-  attr_reader :username
-end
+require_relative 'domain'
 
 # Monkey patch to call a lambda between EM.run and EventMachine.start_server
-# The lambda is primary for initialize, which in my specific case, to kick
+# The lambda is for initialization, and in my specific case, to kick
 # off an EventMachine timer. Not sure if there is a better way to do this.
 module EventMachine::WebSocket
   def self.start(call_me_first, options, &blk)
@@ -46,18 +43,27 @@ class Net
     EventMachine::set_quantum(33) # for 30 fps
     
     @timer = EventMachine::PeriodicTimer.new(0.0333) do
-      messages = @engine.advance
-      broadcast(messages)
+      @engine.advance
+      broadcast
     end
   end
   
   def add_connection(socket)
     puts "Adding a connection to list"
     @connections[socket] = nil
+    socket.send 'request_login'
   end
   
   def receive_message(socket, msg)
-    @engine.from_client(msg)
+    user_account = @connections[socket]
+    if user_account.nil?
+      # Verify that it is a login message, and handle it...
+      # we don't have a user account associated yet so we need to get one
+      user_account = @engine.attempt_login(msg)
+      @connections[socket] = user_account
+    else
+      user_account.from_client << msg
+    end
   end
   
   def remove_connection(socket)
@@ -65,7 +71,7 @@ class Net
     @connections.delete(socket)
   end
   
-  def broadcast(messages)
+  def broadcast
     #@accounts.each do |k,v|
     #  puts "#{k.class} #{v.class} "
     #  k.send 'hello?'

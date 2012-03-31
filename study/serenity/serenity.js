@@ -13,6 +13,10 @@ $(function() {
     ws.onmessage = function (evt) { 
       var received_msg = evt.data;
       $('#log').append('<p>Message Received: ' + received_msg + '</p>');
+      
+      if (received_msg == "request_login") {
+        ws.send("hrothgar");
+      }
     };
     ws.onclose = function() { 
       $('#log').append('<p>Connection Closed</p>');

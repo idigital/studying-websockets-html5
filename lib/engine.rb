@@ -1,4 +1,5 @@
 require_relative 'dao'
+require_relative 'domain'
 
 class Engine
   
@@ -7,10 +8,11 @@ class Engine
   end
   
   def advance
-    #
+    # TODO: Run through the client_q and handle all the messages
   end
   
-  def from_client(msg)
-    puts "Message from client: #{msg}"
+  def attempt_login(msg)
+    # TODO: Verify that it is actually a login message
+    UserAccount.new(msg)
   end
 end
