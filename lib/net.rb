@@ -43,7 +43,7 @@ class Net
     EventMachine::set_quantum(33) # for 30 fps
     
     @timer = EventMachine::PeriodicTimer.new(0.0333) do
-      @engine.advance
+      @engine.advance(@connections.each_value)
       broadcast
     end
   end
@@ -57,8 +57,6 @@ class Net
   def receive_message(socket, msg)
     user_account = @connections[socket]
     if user_account.nil?
-      # Verify that it is a login message, and handle it...
-      # we don't have a user account associated yet so we need to get one
       user_account = @engine.attempt_login(msg)
       @connections[socket] = user_account
     else
@@ -72,9 +70,11 @@ class Net
   end
   
   def broadcast
-    #@accounts.each do |k,v|
-    #  puts "#{k.class} #{v.class} "
-    #  k.send 'hello?'
-    #end
+    @connections.each do |socket,user_account|
+      user_account.to_client.each do |msg|
+        puts "We would send this message #{msg} to #{user_account.username}"
+        # socket.send parsedmessage # <-- TODO: That
+      end
+    end
   end
 end
