@@ -1,12 +1,7 @@
 require 'em-websocket'
-require 'celluloid'
 
-class Client
-  attr_accessor :name
-  
-  def initialize(name)
-    @name = name
-  end
+class UserAccount
+  attr_reader :username
 end
 
 # Monkey patch to call a lambda between EM.run and EventMachine.start_server
@@ -31,52 +26,49 @@ module EventMachine::WebSocket
 end
 
 class Net
-  include Celluloid
   
-  def initialize
-    @clients = {}
+  def initialize(engine)
+    @engine = engine
+    @connections = {}
   end
   
   def start
     EventMachine::WebSocket.start(-> { before_start_server }, :host => 'localhost', :port => 9292) do |socket|
-      socket.onopen { add_client(socket) }
-      socket.onmessage { |msg| handle_message(socket, msg) }
-      socket.onclose { remove_client(socket) }
+      socket.onopen { add_connection(socket) }
+      socket.onmessage { |msg| receive_message(socket, msg) }
+      socket.onclose { remove_connection(socket) }
     end
   end
   
   private
   
   def before_start_server
-    engine = Celluloid::Actor[:engine]
+    EventMachine::set_quantum(33) # for 30 fps
     
-    @timer = EventMachine::PeriodicTimer.new(5) do
-      engine.say_something! "the time is #{Time.now} with #{@clients.size} clients"
-      @clients.each do |k,v|
-        puts "#{k.class} #{v.class} "
-        k.send 'hello?'
-      end
+    @timer = EventMachine::PeriodicTimer.new(0.0333) do
+      messages = @engine.advance
+      broadcast(messages)
     end
   end
   
-  def add_client(socket)
-    puts "Adding a client"
-    client = Client.new("User #{rand}")
-    @clients[socket] = client
+  def add_connection(socket)
+    puts "Adding a connection to list"
+    @connections[socket] = nil
   end
   
-  def handle_message(socket, message)
-    puts "Received a message"
-    socket.send 'Hi to you too!'
-    @clients.each do |k,v|
-      if k != socket
-        k.send 'Someone said hi!'
-      end
-    end
+  def receive_message(socket, msg)
+    @engine.from_client(msg)
   end
   
-  def remove_client(socket)
-    puts "Disconnecting a client"
-    @clients.delete(socket)
+  def remove_connection(socket)
+    puts "Client disconnected - removing from list"
+    @connections.delete(socket)
+  end
+  
+  def broadcast(messages)
+    #@accounts.each do |k,v|
+    #  puts "#{k.class} #{v.class} "
+    #  k.send 'hello?'
+    #end
   end
 end

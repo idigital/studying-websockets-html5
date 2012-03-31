@@ -1,13 +1,16 @@
 require_relative 'dao'
 
 class Engine
-  include Celluloid
   
   def start
     @dao = DAO.new
   end
   
-  def say_something(msg)
-    puts "Hi! #{msg}"
+  def advance
+    #
+  end
+  
+  def from_client(msg)
+    puts "Message from client: #{msg}"
   end
 end

@@ -2,7 +2,6 @@ GEM
   remote: https://rubygems.org/
   specs:
     addressable (2.2.7)
-    celluloid (0.9.0)
     em-websocket (0.3.6)
       addressable (>= 2.1.1)
       eventmachine (>= 0.12.9)
@@ -14,7 +13,6 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  celluloid
   em-websocket
   sequel
   sqlite3

@@ -4,11 +4,9 @@ require_relative 'net'
 class SerenityTech
   def start
     engine = Engine.new
-    Celluloid::Actor[:engine] = engine
     engine.start
     
-    net = Net.new
-    Celluloid::Actor[:net] = net
+    net = Net.new(engine)
     net.start
   end
 end
