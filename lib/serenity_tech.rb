@@ -1,5 +1,5 @@
-require_relative 'engine'
-require_relative 'net'
+require_relative 'core/engine'
+require_relative 'core/net'
 
 class SerenityTech
   def start

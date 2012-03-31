@@ -23,7 +23,6 @@ module EventMachine::WebSocket
 end
 
 class Net
-  
   def initialize(engine)
     @engine = engine
     @connections = {}
@@ -43,7 +42,8 @@ class Net
     EventMachine::set_quantum(33) # for 30 fps
     
     @timer = EventMachine::PeriodicTimer.new(0.0333) do
-      @engine.advance(@connections.each_value)
+      @engine.execute_tasks
+      @engine.execute_messages(@connections.each_value)
       broadcast
     end
   end
@@ -73,8 +73,8 @@ class Net
     @connections.each do |socket,user_account|
       user_account.to_client.each do |msg|
         puts "We would send this message #{msg} to #{user_account.username}"
-        # socket.send parsedmessage # <-- TODO: That
       end
+      user_account.to_client_clear
     end
   end
 end
