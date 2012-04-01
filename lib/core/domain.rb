@@ -1,3 +1,9 @@
+# From server to client(s)
+class ServerMessage
+  attr_reader :clients
+  attr_reader :obj
+end
+
 class UserAccount
   attr_reader :username
   attr_reader :from_client 

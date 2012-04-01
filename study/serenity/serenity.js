@@ -15,7 +15,7 @@ $(function() {
       $('#log').append('<p>Message Received: ' + received_msg + '</p>');
       
       if (received_msg == "request_login") {
-        ws.send("hrothgar");
+        ws.send($("#username").val());
       }
     };
     ws.onclose = function() { 
@@ -25,7 +25,7 @@ $(function() {
   
   $('#send').click(function() {
     if (ws != null) {
-      ws.send("Hi!");
+      ws.send($("#msg").val());
     }
   });
   

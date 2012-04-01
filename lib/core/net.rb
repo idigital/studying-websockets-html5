@@ -49,7 +49,6 @@ class Net
   end
   
   def add_connection(socket)
-    puts "Adding a connection to list"
     @connections[socket] = nil
     socket.send 'request_login'
   end
@@ -65,14 +64,19 @@ class Net
   end
   
   def remove_connection(socket)
-    puts "Client disconnected - removing from list"
+    user_account = @connections[socket]
+    unless user_account.nil?
+      @engine.notify_disconnect(user_account)
+    end
+    
     @connections.delete(socket)
   end
   
   def broadcast
     @connections.each do |socket,user_account|
+      next if user_account.nil?
       user_account.to_client.each do |msg|
-        puts "We would send this message #{msg} to #{user_account.username}"
+        socket.send msg
       end
       user_account.to_client_clear
     end
