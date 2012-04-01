@@ -4,6 +4,8 @@ require 'sequel'
 class SqlBoard
   
   DB = Sequel.sqlite
+  WIDTH = 100
+  HEIGHT = 100
   
   def initialize
     #DB.loggers << Logger.new($stdout) # Can turn this on for debugging
@@ -104,6 +106,9 @@ class SqlBoard
   end
   
   def upsert_candidate(x, y)
+    # Enforce boundary
+    return nil if x < 0 || x >= WIDTH || y < 0 || y >= HEIGHT
+    
     candidate_cells = DB[:candidate_cells]
     existing_cell = candidate_cells.first(:x => x, :y => y)
     
