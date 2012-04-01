@@ -1,6 +1,6 @@
 require 'logger'
 require 'json'
-require_relative 'board'
+require_relative 'sql_board'
 
 class Avatar
   attr_reader :name
@@ -14,7 +14,7 @@ end
 class World
   # Runs once at server startup
   def initialize
-    @board = Board.new
+    @board = SqlBoard.new # or MemBoard.new
     @logger = Logger.new(STDOUT)
     @avatars = {}
     @last_time = Time.now
@@ -23,7 +23,7 @@ class World
   # Runs each tick (tick = approx 33ms)
   def advance
     elapsed = Time.now - @last_time
-    if (elapsed > 1.0)
+    if (elapsed > 0.03)
       @last_time = Time.now
       delta = @board.step
       
@@ -43,13 +43,16 @@ class World
   # Runs each time a client login request is received
   def attempt_login(user_account)
     @logger.info "World: Processing login request for #{user_account.inspect}"
-    # TODO: Would need to prevent dupes
+    # TODO: Would need to prevent dupes? Or will the hash always be unique?
     @avatars[user_account] = Avatar.new(user_account.username)
+    
+    delta = @board.get_living_info
+    user_account.send_to_client(delta.to_json)
   end
   
   # Runs when a client is disconnected
   def notify_disconnect(user_account)
-    @logger.info "World: Reacting to disconnction of #{user_account.inspect}"
+    @logger.info "World: Reacting to disconnection of #{user_account.inspect}"
     @avatars.delete(user_account)
   end
   

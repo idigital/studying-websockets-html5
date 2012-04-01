@@ -2,6 +2,7 @@ $(function() {
   
   // Top level variables
   var ws = null;
+  var cells = {};
   
   // Check for websocket support
   var support = "MozWebSocket" in window ? 'MozWebSocket' : ("WebSocket" in window ? 'WebSocket' : null);
@@ -17,11 +18,11 @@ $(function() {
     }
     ws = new WebSocket("ws://localhost:9292");
     ws.onopen = function() {
-      $('#log').append('<p>Connection Opened</p>');
+      handleOpen();
     };
     ws.onmessage = function (evt) {
       var received_msg = evt.data;
-      $('#log').append('<p>Message Received: ' + received_msg + '</p>');
+      //$('#log').append('<p>Message Received: ' + received_msg + '</p>');
       
       if (received_msg == "request_login") {
         ws.send($("#username").val());
@@ -47,17 +48,38 @@ $(function() {
     }
   });
   
-  // Parsing example:
-  //cell = '{ "x" : 10, "y" : 10, "alive" : false }';
-  //obj = JSON.parse(cell);
-  
-  function handleMessage(msg) {
-    console.log(msg);
+  function handleOpen() {
+    cells = {}
   }
   
-  var cells = new Array();
-  cells[0] = { x: 10, y: 10 }
-  cells[1] = { x: 20, y: 20 }
+  function handleMessage(msg) {
+    delta = JSON.parse(msg);
+    
+    for (i = 0; i < delta.length; i++) {
+      action = delta[i];
+      executeAction(action);
+    }
+  }
+  
+  function executeAction(action) {
+    if (action['action'] == "alive") {
+      var x = action['x'];
+      var y = action['y'];
+      var key = x + "_" + y;
+      cells[key] = { x: x, y: y }
+    }
+    else if (action['action'] == "dead") {
+      var x = action['x'];
+      var y = action['y'];
+      var key = x + "_" + y;
+      delete cells[key];
+    }
+    else {
+      console.log('unknown action? ' + action);
+    }
+    
+    drawBoard(); // do it here, don't really need a render loop in this application
+  }
   
   // Main rendering function
   function drawBoard() {
@@ -66,8 +88,8 @@ $(function() {
     
     ctx.clearRect(0, 0, 300, 300);
     
-    for (var i = 0; i < cells.length; i++) {
-      cell = cells[i];
+    for (var index in cells) {
+      var cell = cells[index]
       
       var width = 3;
       var x = cell.x * width;
@@ -76,9 +98,6 @@ $(function() {
     }
   }
 });
-
-
-
 
 
 

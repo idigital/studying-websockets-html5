@@ -1,7 +1,7 @@
 require 'logger'
 require 'sequel'
 
-class Board
+class SqlBoard
   
   DB = Sequel.sqlite
   
@@ -20,7 +20,13 @@ class Board
   end
   
   def get_living_info
-    # TODO: Return coordinates of living cells
+    delta = []
+    living_cells = DB[:living_cells]
+    living_cells.each do |cell|
+      delta << { :x => cell[:x], :y => cell[:y], :action => 'alive' }
+    end
+    
+    delta
   end
   
   def step
@@ -51,7 +57,7 @@ class Board
     
     # Part 3 - Birth
     # any candidate cells with exactly three neighbors
-    # can be entered the land of the living (could already be there)
+    # can enter the land of the living (could already be there)
     # This could probably be improved upon with set operations
     candidate_cells.where(:neighbors => 3).each do |cell|
       insert_living_cell(cell[:x], cell[:y])
