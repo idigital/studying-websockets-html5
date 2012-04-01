@@ -1,9 +1,3 @@
-# From server to client(s)
-class ServerMessage
-  attr_reader :clients
-  attr_reader :obj
-end
-
 class UserAccount
   attr_reader :username
   attr_reader :from_client 
@@ -23,5 +17,9 @@ class UserAccount
   
   def from_client_clear
     from_client.clear
+  end
+  
+  def send_to_client(msg)
+    to_client << msg
   end
 end

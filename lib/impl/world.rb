@@ -1,4 +1,5 @@
 require 'logger'
+require 'json'
 require_relative 'board'
 
 class Avatar
@@ -20,12 +21,16 @@ class World
   end
   
   # Runs each tick (tick = approx 33ms)
-  # Process incoming messages from daemons
   def advance
     elapsed = Time.now - @last_time
     if (elapsed > 1.0)
       @last_time = Time.now
-      @board.step
+      delta = @board.step
+      
+      # Queue the appropriate deltas to the appropriate avatars
+      @avatars.each_key do |user_account|
+        user_account.send_to_client(delta.to_json)
+      end
     end
   end
   

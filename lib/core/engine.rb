@@ -6,7 +6,7 @@ class Engine
     @world = World.new
   end
   
-  # Run through timed tasks and handle all their messages
+  # Run through timed tasks
   def execute_tasks
     @world.advance
   end

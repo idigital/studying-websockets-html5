@@ -27,6 +27,8 @@ class Board
     candidate_cells = DB[:candidate_cells]
     candidate_cells.delete
     
+    delta = []
+    
     # Part 1 - Setup
     # Calculate neighbors for all cells on each
     # side of each living cell
@@ -38,21 +40,25 @@ class Board
     # Part 2 - Death
     # delete from living_cells where not exists the x,y
     # coordinate in candidate_cells where neighbors in (2,3)
+    # This could probably be improved upon with set operations
     living_cells.each do |cell|
       existing_cell = candidate_cells.first(:x => cell[:x], :y => cell[:y], :neighbors => [2,3])
       if existing_cell.nil?
         living_cells.where(:x => cell[:x], :y => cell[:y]).delete
-        # TODO: Save coordinates for death messages to clients
+        delta << { :x => cell[:x], :y => cell[:y], :action => 'dead' }
       end
     end
     
     # Part 3 - Birth
     # any candidate cells with exactly three neighbors
     # can be entered the land of the living (could already be there)
+    # This could probably be improved upon with set operations
     candidate_cells.where(:neighbors => 3).each do |cell|
       insert_living_cell(cell[:x], cell[:y])
-      # TODO: Save coordinates for birth messages to clients
-    end 
+      delta << { :x => cell[:x], :y => cell[:y], :action => 'alive' } 
+    end
+    
+    delta 
   end
   
   private

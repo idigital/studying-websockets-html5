@@ -25,6 +25,8 @@ $(function() {
       
       if (received_msg == "request_login") {
         ws.send($("#username").val());
+      } else {
+        handleMessage(received_msg);
       }
     };
     ws.onclose = function() { 
@@ -49,14 +51,20 @@ $(function() {
   //cell = '{ "x" : 10, "y" : 10, "alive" : false }';
   //obj = JSON.parse(cell);
   
-  // Draw some stuff
+  function handleMessage(msg) {
+    console.log(msg);
+  }
+  
   var cells = new Array();
   cells[0] = { x: 10, y: 10 }
   cells[1] = { x: 20, y: 20 }
   
+  // Main rendering function
   function drawBoard() {
     var board = document.getElementById("board");
     var ctx = board.getContext("2d");
+    
+    ctx.clearRect(0, 0, 300, 300);
     
     for (var i = 0; i < cells.length; i++) {
       cell = cells[i];
@@ -67,10 +75,7 @@ $(function() {
       ctx.fillRect(x, y, width, width);
     }
   }
-  drawBoard();
 });
-
-
 
 
 
