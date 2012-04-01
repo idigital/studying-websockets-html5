@@ -1,6 +1,7 @@
 require 'logger'
 require 'json'
-require_relative 'sql_board'
+#require_relative 'sql_board'
+require_relative 'mem_board'
 
 class Avatar
   attr_reader :name
@@ -14,7 +15,7 @@ end
 class World
   # Runs once at server startup
   def initialize
-    @board = SqlBoard.new # or MemBoard.new
+    @board = MemBoard.new # or SqlBoard.new
     @logger = Logger.new(STDOUT)
     @avatars = {}
     @last_time = Time.now

@@ -2,7 +2,6 @@ require 'logger'
 require 'sequel'
 
 class SqlBoard
-  
   DB = Sequel.sqlite
   WIDTH = 100
   HEIGHT = 100
