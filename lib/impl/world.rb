@@ -1,5 +1,5 @@
 require 'logger'
-require_relative 'dao'
+require_relative 'board'
 
 class Avatar
   attr_reader :name
@@ -9,16 +9,24 @@ class Avatar
   end
 end
 
+
 class World
   # Runs once at server startup
   def initialize
+    @board = Board.new
     @logger = Logger.new(STDOUT)
     @avatars = {}
+    @last_time = Time.now
   end
   
   # Runs each tick (tick = approx 33ms)
   # Process incoming messages from daemons
   def advance
+    elapsed = Time.now - @last_time
+    if (elapsed > 1.0)
+      @last_time = Time.now
+      @board.step
+    end
   end
   
   # Runs for each message queued per tick (tick = approx 33ms)

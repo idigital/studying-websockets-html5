@@ -3,7 +3,6 @@ require_relative '../impl/world'
 
 class Engine
   def start
-    @dao = DAO.new
     @world = World.new
   end
   
