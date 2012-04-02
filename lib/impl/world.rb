@@ -38,7 +38,10 @@ class World
   # Runs for each message queued per tick (tick = approx 33ms)
   # Process incoming messages from clients
   def execute(user_account, client_msg)
-    @logger.info "World: Processing message #{client_msg.inspect} for #{user_account.inspect}"
+    obj = JSON.parse(client_msg)
+    if obj['action'] == 'click'
+      @board.insert_living_cell(obj['x'], obj['y'])
+    end
   end
   
   # Runs each time a client login request is received

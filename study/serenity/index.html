@@ -6,16 +6,21 @@
 </head>
 <body>
 
-<input id="username" type="text" />
-<button id="connect">Connect</button>
-<input id="msg" type="text" />
-<button id="send">Send</button>
-<button id="disconnect">Disconnect</button>
-<div id="log" />
-
-<canvas id="board" width="300" height="300" style="border-style: dotted">
+<canvas id="board" width="300" height="300" style="border-style: dotted;">
   Your browser is far too old to run this application.
 </canvas>
+
+<section>
+  <button id="connect">Connect</button>
+  <button id="disconnect">Disconnect</button>
+</section>
+
+<section id="devconsole" style="display: none;">
+  <input id="username" type="text" />
+  <input id="msg" type="text" />
+  <button id="send">Send</button>
+  <div id="log" />
+</section>
 
 </body>
 </html>

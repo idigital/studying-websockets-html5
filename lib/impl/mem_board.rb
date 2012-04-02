@@ -37,7 +37,10 @@ end
 
 ## The rest of this file is based on code I found here:
 ## http://bjorkoy.com/2010/05/conways-game-of-life-in-ruby/
-## Few changes were needed to integrate it into The mem board
+##
+## Few changes were needed to integrate it into the mem board.
+## Note also that this differs from the sql board in that
+## the world wraps around (see the modulus stuff at the end)
 
 class Cell
   attr_writer :neighbors

@@ -10,6 +10,14 @@ $(function() {
     $("#board").before("<p>Your browser is a little too old to run this application.</p>");
   }
   
+  // Set up input
+  $('#board').click(function(e) {
+    var x = e.pageX - this.offsetLeft;
+    var y = e.pageY - this.offsetTop;
+    
+    handleClick(x, y);
+  });
+  
   // Set up networking 
   $('#connect').focus();
   $('#connect').click(function() {
@@ -30,8 +38,8 @@ $(function() {
         handleMessage(received_msg);
       }
     };
-    ws.onclose = function() { 
-      $('#log').append('<p>Connection Closed</p>');
+    ws.onclose = function() {
+      // something
     };
   });
   
@@ -50,6 +58,14 @@ $(function() {
   
   function handleOpen() {
     cells = {}
+  }
+  
+  function handleClick(x,y) {
+    x = Math.round(x / 3);  // convert to grid (width = 3)
+    y = Math.round(y / 3);  // convert to grid (width = 3)
+    
+    msg = { 'x': x, 'y': y, 'action': 'click' }
+    ws.send(JSON.stringify(msg));
   }
   
   function handleMessage(msg) {
