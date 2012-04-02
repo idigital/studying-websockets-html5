@@ -65,7 +65,9 @@ $(function() {
     y = Math.round(y / 3);  // convert to grid (width = 3)
     
     msg = { 'x': x, 'y': y, 'action': 'click' }
-    ws.send(JSON.stringify(msg));
+    if (ws != null) {
+      ws.send(JSON.stringify(msg));
+    }
   }
   
   function handleMessage(msg) {
