@@ -4,7 +4,6 @@ class MemBoard
   
   def initialize
     @game = Game.new(WIDTH, HEIGHT)
-    r_pentomino(50, 50)
   end
   
   def insert_living_cell(x, y)
@@ -21,8 +20,6 @@ class MemBoard
     @game.next!
   end
   
-  private
-  
   # R-pentomino shape:  XX
   #                    XX
   #                     X
@@ -33,6 +30,8 @@ class MemBoard
     insert_living_cell(x  , y+1)
     insert_living_cell(x  , y+2)
   end
+  
+  private
 end
 
 ## The rest of this file is based on code I found here:

@@ -1,6 +1,5 @@
 require 'logger'
 require 'json'
-#require_relative 'sql_board'
 require_relative 'mem_board'
 
 class Avatar
@@ -15,16 +14,16 @@ end
 class World
   # Runs once at server startup
   def initialize
-    @board = MemBoard.new # or SqlBoard.new
+    @board = MemBoard.new
     @logger = Logger.new(STDOUT)
     @avatars = {}
     @last_time = Time.now
   end
   
-  # Runs each tick (tick = approx 33ms)
+  # Runs each tick (tick = approx 3.33ms)
   def advance
     elapsed = Time.now - @last_time
-    if (elapsed > 0.03)
+    if (elapsed > 0.033)
       @last_time = Time.now
       delta = @board.step
       
@@ -35,12 +34,29 @@ class World
     end
   end
   
-  # Runs for each message queued per tick (tick = approx 33ms)
+  # Runs for each message queued per tick (tick = approx 3.33ms)
   # Process incoming messages from clients
   def execute(user_account, client_msg)
     obj = JSON.parse(client_msg)
-    if obj['action'] == 'click'
-      @board.insert_living_cell(obj['x'], obj['y'])
+    x = obj['x']
+    y = obj['y']
+    action = obj['action']
+    
+    case action
+      when 'single'
+        @board.insert_living_cell(x, y)
+      when 'acorn'
+        # Do it
+      when 'b_heptomino'
+        # Do it
+      when 'r_pentomino'
+        @board.r_pentomino(x, y)
+      when 'bunnies'
+        # Do it
+      when 'reset'
+        # Do it (not yet implemented on client)
+      else
+        @logger.error "Warning: Received unknown message from client: #{client_msg}"
     end
   end
   

@@ -3,20 +3,35 @@ $(function() {
   // Top level variables
   var ws = null;
   var cells = {};
+  var floatingX = 0;
+  var floatingY = 0;
+  var selectedPattern;
   
-  // Check for websocket support
-  var support = "MozWebSocket" in window ? 'MozWebSocket' : ("WebSocket" in window ? 'WebSocket' : null);
-  if(support==null) {
-    $("#board").before("<p>Your browser is a little too old to run this application.</p>");
-  }
-  
-  // Set up input
+  // Set up canvas input
   $('#board').click(function(e) {
     var x = e.pageX - this.offsetLeft;
     var y = e.pageY - this.offsetTop;
     
     handleClick(x, y);
   });
+  
+  // Set up pattern box input
+  $('.pattern').click(function(e) {
+    selectedPattern = $(this).attr("value");
+    
+    $('.pattern').css('background-color', 'transparent');
+    $(this).css('background-color', 'LightSteelBlue');
+  });
+  
+  // Default pattern selected
+  $('#r_pentomino_pattern').click();
+  
+  
+  // Check for websocket support
+  var support = "MozWebSocket" in window ? 'MozWebSocket' : ("WebSocket" in window ? 'WebSocket' : null);
+  if(support==null) {
+    $("#board").before("<p>Your browser is a little too old to run this application.</p>");
+  }
   
   // Set up networking 
   $('#connect').focus();
@@ -64,7 +79,7 @@ $(function() {
     x = Math.round(x / 3);  // convert to grid (width = 3)
     y = Math.round(y / 3);  // convert to grid (width = 3)
     
-    msg = { 'x': x, 'y': y, 'action': 'click' }
+    msg = { 'x': x, 'y': y, 'action': selectedPattern }
     if (ws != null) {
       ws.send(JSON.stringify(msg));
     }
@@ -95,11 +110,9 @@ $(function() {
     else {
       console.log('unknown action? ' + action);
     }
-    
-    drawBoard(); // do it here, don't really need a render loop in this application
   }
   
-  // Main rendering function
+  // Main rendering function and timer loop
   function drawBoard() {
     var board = document.getElementById("board");
     var ctx = board.getContext("2d");
@@ -115,6 +128,7 @@ $(function() {
       ctx.fillRect(x, y, width, width);
     }
   }
+  setInterval(drawBoard, 33);
 });
 
 
